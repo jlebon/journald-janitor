@@ -4,19 +4,22 @@ IFS=$'\n\t'
 
 JOURNAL_DIR="/var/log/journal"
 
+# number of boots to keep (includes current boot)
+MAX_BOOTS=2
+
 main() {
 
 	# check how many boots there are
 	boots=$(journalctl --list-boots | wc -l)
-	if [ $boots -le 2 ]; then
-		echo "Only last boot saved; no pruning necessary."
+	if [ $boots -le $MAX_BOOTS ]; then
+		echo "Only $boots boots saved; no pruning necessary."
 		exit 0
 	fi
 
-	# get the timestamp of the last entry for boot -2
-	bootstamp=$(get_timestamp -b -2)
+	# get the timestamp of the last entry for the most recent boot we don't want
+	bootstamp=$(get_timestamp -b -$MAX_BOOTS)
 	human=$(date -d @${bootstamp::-6}) # convert to secs, then to human
-	echo "POSIX time of last boot -2 entry is: \"$bootstamp\" ($human)."
+	echo "POSIX time of last entry for boot -$MAX_BOOTS is $bootstamp ($human)."
 
 	# make sure the dir even exists
 	if [ ! -d "$JOURNAL_DIR" ]; then
