@@ -1,0 +1,9 @@
+[Unit]
+Description=Janitor service for journald
+After=systemd-journald.service
+
+[Service]
+ExecStart=/usr/bin/journald-janitor
+
+[Install]
+WantedBy=multi-user.target
