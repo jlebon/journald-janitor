@@ -28,13 +28,19 @@ main() {
 	fi
 
 	# evaluate eligibility for deletion of each journal file
+	deleted=false
 	for journal in $(find "$JOURNAL_DIR" -name '*.journal'); do
 		journalstamp=$(get_timestamp --file "$journal")
 		if [ $journalstamp -le $bootstamp ]; then
 			echo "Deleting journal \"$journal\"."
 			rm "$journal"
+			deleted=true
 		fi
 	done
+
+	if [ $deleted == false ]; then
+		echo "No journals deleted."
+	fi
 }
 
 get_timestamp() { # $@ = args to pass to journalctl
